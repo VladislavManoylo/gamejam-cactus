@@ -25,10 +25,21 @@ Command getCommand() {
 
 class Game {
 public:
-	char* getScreen() {
+	Game() : m_running(true) {}
+
+	bool isRunning() const { return m_running; }
+
+	char* getScreen() const {
 		return m_screen;
 	}
+
+	void runCommand(Command cmd) {
+		if (cmd == Command::exit)
+			m_running = false;
+	}
+
 private:
+	bool m_running;
 	char* m_screen =
 		"................................................................................\n"
 		"................................................................................\n"
@@ -69,15 +80,15 @@ int main() {
 	time_point<system_clock> time = system_clock::now();
 	Game game;
 	do {
-		cmd = getCommand();
+		game.runCommand(getCommand());
+
 		erase();
 		printw(game.getScreen());
 		refresh();
+
 		time += milliseconds(MPF);
 		this_thread::sleep_until(time);
-		if (cmd == Command::exit)
-			break;
-	} while (true);
+	} while (game.isRunning());
 	endwin();
 
 	return 0;

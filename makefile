@@ -1,5 +1,5 @@
 game: game.cpp
-	g++ -Werror -Wall -Wextra --std=c++11 -o game game.cpp -lncurses
+	g++ -Werror -Wall -Wextra -pedantic -std=c++1z -o game game.cpp -lncurses
 
 run:
 	./game

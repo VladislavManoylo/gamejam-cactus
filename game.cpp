@@ -33,27 +33,13 @@ Command getCommand() {
 	}
 }
 
-class Game {
-	using Pos = pair<unsigned, unsigned>;
-	unsigned posToIndex(Pos pos) const {
-		return pos.first * m_frameWidth + pos.second;
-	}
+template <typename T>
+using Coord = pair<T, T>;
+
+class Character {
 public:
-	Game()
-		: m_running(true)
-	{
-	}
-
-	bool isRunning() const { return m_running; }
-
-	void print() const {
-		char frame[m_frameSize];
-		strncpy(frame, m_background, m_frameSize);
-		frame[posToIndex(m_pos)] = 'X';
-
-		erase();
-		printw(frame);
-		refresh();
+	Coord<unsigned> getFramePos () const {
+		return m_pos;
 	}
 
 	void runCommand(Command cmd) {
@@ -70,16 +56,61 @@ public:
 			case Command::right:
 				++m_pos.second;
 				break;
+			default:
+				break;
+		}
+	}
+
+	void update() {
+	}
+
+private:
+	Coord<unsigned> m_pos;
+};
+
+class Game {
+	using Pos = Coord<unsigned>;
+	unsigned posToIndex(Pos pos) const {
+		return pos.first * m_frameWidth + pos.second;
+	}
+public:
+	Game()
+		: m_running(true)
+	{}
+
+	bool isRunning() const { return m_running; }
+
+	void print() const {
+		char frame[m_frameSize];
+		strncpy(frame, m_background, m_frameSize);
+		frame[posToIndex(m_player.getFramePos())] = 'X';
+
+		erase();
+		printw(frame);
+		refresh();
+	}
+
+	void update() {
+		m_runCommand(getCommand()); // calls runCommand on player
+		m_player.update();
+	}
+
+private:
+
+	void m_runCommand(Command cmd) {
+		switch (cmd) {
 			case Command::exit:
 				m_running = false;
 				break;
 			case Command::none:
 				break;
+			default:
+				m_player.runCommand(cmd);
 		}
 	}
 
 private:
-	Pos m_pos = { 10, 10 };
+	Character m_player;
 	bool m_running;
 	static constexpr unsigned m_frameWidth = 81;
 	static constexpr unsigned m_frameHeight = 31;
@@ -123,8 +154,7 @@ int main() {
 	time_point<system_clock> time = system_clock::now();
 	Game game;
 	do {
-		game.runCommand(getCommand());
-
+		game.update();
 		game.print();
 
 		time += milliseconds(MPF);

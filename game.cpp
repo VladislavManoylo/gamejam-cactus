@@ -96,24 +96,19 @@ class Canvas {
 public:
 	Canvas()
 	{
-		m_picture.resize((Width+1)*Height);
-		/* unsigned i = 0; */
-		/* for (unsigned x = 0; x < Height; ++x) { */
-		/* 	for (unsigned y = 0; y < Width; ++y) */
-		/* 		m_picture[i++] = 'E'; */
-		/* 	m_picture[i++] = '\n'; */
-		/* } */
 		m_picture = scene1;
 	}
 
 	string getPicture() const {
-		string ret = m_picture;
+		string ret = "";
+		for (const auto& line : m_picture)
+			ret += line + '\n';
 		replace(ret.begin(), ret.end(), 'E', ' ');
 		return ret;
 	}
 
 	void draw(const Vec2<unsigned> pos, const char c) {
-		m_picture.at(m_getIndex(pos)) = c;
+		m_picture.at(pos.first).at(pos.second) = c;
 	}
 
 	void draw(const Vec2<unsigned> pos, const Sprite sprite) {
@@ -121,13 +116,13 @@ public:
 		for (unsigned x = 0; x < d.first; ++x)
 			for (unsigned y = 0; y < d.second; ++y)
 				if (sprite.get(x, y) != Sprite::transparent)
-					m_picture.at(m_getIndex(x+pos.first, y+pos.second)) = sprite.get(x, y);
+					m_picture.at(x+pos.first).at(y+pos.second) = sprite.get(x, y);
 	}
 
 private:
 	unsigned m_getIndex(unsigned x, unsigned y) const { return x * (Width + 1) + y; }
 	unsigned m_getIndex(Vec2<unsigned> pos) const { return m_getIndex(pos.first, pos.second); }
-	string m_picture;
+	vector<string> m_picture;
 };
 
 template<unsigned Width, unsigned Height>

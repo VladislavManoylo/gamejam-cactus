@@ -37,7 +37,7 @@ Command getCommand() {
 class Character {
 public:
 	Vec2<unsigned> getFramePos () const {
-		return m_pos;
+		return Vec2<unsigned>(m_pos.first, m_pos.second);
 	}
 
 	Sprite getSprite() const {
@@ -53,10 +53,10 @@ public:
 				++m_pos.first;
 				break;
 			case Command::left:
-				--m_pos.second;
+				m_velocity.second = -10;
 				break;
 			case Command::right:
-				++m_pos.second;
+				m_velocity.second = 10;
 				break;
 			default:
 				break;
@@ -64,10 +64,13 @@ public:
 	}
 
 	void update() {
+		m_pos.first += m_velocity.first / FPS;
+		m_pos.second += m_velocity.second / FPS;
 	}
 
 private:
-	Vec2<unsigned> m_pos = Vec2<unsigned>(30, 30);
+	Vec2<double> m_pos = Vec2<double>(30, 30);
+	Vec2<double> m_velocity = Vec2<double>(0,0);
 };
 
 template<unsigned Width, unsigned Height>
@@ -113,8 +116,6 @@ public:
 
 	void print() const {
 		Canvas<Width, Height> copy = m_background;
-		/* copy.draw(m_player.getFramePos(), 'X'); */
-		/* copy.draw(m_player.getFramePos(), Sprite(Vec2<unsigned>(2, 4), "12345678")); */
 		copy.draw(m_player.getFramePos(), m_player.getSprite());
 
 		erase();

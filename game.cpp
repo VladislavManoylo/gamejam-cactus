@@ -102,8 +102,8 @@ public:
 
 	string getFrame(Vec2<int> frameStart) const {
 		string ret = "";
-		for (unsigned x = frameStart.x, xEnd = max(Height, x + Height); x < xEnd; ++x) {
-			for (unsigned y = frameStart.y, yEnd = max(Width, y + Width); y < yEnd; ++y)
+		for (unsigned x = frameStart.x, xEnd = min(m_sceneSize.x, x + Height); x < xEnd; ++x) {
+			for (unsigned y = frameStart.y, yEnd = min(m_sceneSize.y, y + Width); y < yEnd; ++y)
 				ret += m_picture.at(x).at(y);
 			ret += '\n';
 		}

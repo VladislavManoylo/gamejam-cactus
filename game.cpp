@@ -41,7 +41,7 @@ public:
 	}
 
 	Sprite getSprite() const {
-		return cactusSprite;
+		return cactusSprite2;
 	}
 
 	void runCommand(Command cmd) {
@@ -94,7 +94,8 @@ public:
 		const Vec2<unsigned>& d = sprite.dimensions;
 		for (unsigned x = 0; x < d.first; ++x)
 			for (unsigned y = 0; y < d.second; ++y)
-				m_picture[x+pos.first][y+pos.second] = sprite.get(x, y);
+				if (sprite.get(x, y) != Sprite::transparent)
+					m_picture[x+pos.first][y+pos.second] = sprite.get(x, y);
 	}
 
 private:
@@ -112,8 +113,9 @@ public:
 
 	void print() const {
 		Canvas<Width, Height> copy = m_background;
-		copy.draw(m_player.getFramePos(), 'X');
-		/* copy.draw(m_player.getFramePos(), m_player.getSprite()); */
+		/* copy.draw(m_player.getFramePos(), 'X'); */
+		/* copy.draw(m_player.getFramePos(), Sprite(Vec2<unsigned>(2, 4), "12345678")); */
+		copy.draw(m_player.getFramePos(), m_player.getSprite());
 
 		erase();
 		printw(copy.getPicture());

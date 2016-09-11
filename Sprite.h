@@ -18,8 +18,9 @@ struct Sprite {
 	std::string sheet;
 
 	char get(unsigned x, unsigned y) const {
-		return sheet.at(x*dimensions.first + y);
+		return sheet.at(x*dimensions.second + y);
 	}
+	static constexpr char transparent = 'E';
 };
 
 struct SpriteSheet {
@@ -29,24 +30,42 @@ struct SpriteSheet {
 	std::map<std::string, Sprite> sheets;
 };
 
-// note '€' is transparent
-const Sprite cactusSprite(Vec2<unsigned>(28, 16),
-"€€€€€€€€€€_-----_€€€€€€€€€€€"
+const Sprite cactusSprite(Vec2<unsigned>(16, 28),
+"          _-----_           "
 " ________,_______,_________ "
 "(                          )"
-"€; _-------------------_ ,;€"
-"€€`------|        |-----'€€€"
-"€€€€€€€€€|  '   ' |€€€€,---,"
-",----,€€€| ###  ###€€€€|   }"
-"{  ' |€€#############€€|   |"
-"|'  '|€€€|  ##  ##|----   '|"
+" ; _-------------------_ ,; "
+"  `------|        |-----'   "
+"         |  '   ' |    ,---,"
+",----,   | ###  ###    |   }"
+"{  ' |  #############  |   |"
+"|'  '|   |  ##  ##|----   '|"
 "{    ----|        }        }"
 "| '    '   ' '  ' | '   '  |"
 "{   '             |----+---'"
-"€`-+--'--|  '   ' |€€€€'€€€€"
-"€€€'€€€€€{   '    }€€€€€€€€€"
-"€€€€€€€€€| '   '  |€€€€€€€€€"
-"€€€€€€€€€|'  '   '|€€€€€€€€€"
+" `-+--'--|  '   ' |    '    "
+"   '     {   '    }         "
+"         | '   '  |         "
+"         |'  '   '|         "
+);
+
+const Sprite cactusSprite2(Vec2<unsigned>(16, 28),
+"EEEEEEEEEE_-----_EEEEEEEEEEE"
+" ________,_______,_________ "
+"(                          )"
+"E; _-------------------_ ,;E"
+"EE`------|        |-----'EEE"
+"EEEEEEEEE|  '   ' |EEEE,---,"
+",----,EEE| ###  ###EEEE|   }"
+"{  ' |EE#############EE|   |"
+"|'  '|EEE|  ##  ##|----   '|"
+"{    ----|        }        }"
+"| '    '   ' '  ' | '   '  |"
+"{   '             |----+---'"
+"E`-+--'--|  '   ' |EEEE'EEEE"
+"EEE'EEEEE{   '    }EEEEEEEEE"
+"EEEEEEEEE| '   '  |EEEEEEEEE"
+"EEEEEEEEE|'  '   '|EEEEEEEEE"
 );
 
 #endif

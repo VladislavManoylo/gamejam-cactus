@@ -99,10 +99,13 @@ public:
 		m_picture = scene1;
 	}
 
-	string getPicture() const {
+	string getFrame(Vec2<unsigned> frameStart) const {
 		string ret = "";
-		for (const auto& line : m_picture)
-			ret += line + '\n';
+		for (unsigned x = frameStart.first, xEnd = x + Height; x < xEnd; ++x) {
+			for (unsigned y = frameStart.second, yEnd = y + Width; y < yEnd; ++y)
+				ret += m_picture.at(x).at(y);
+			ret += '\n';
+		}
 		replace(ret.begin(), ret.end(), 'E', ' ');
 		return ret;
 	}
@@ -139,7 +142,7 @@ public:
 		copy.draw(m_player.getFramePos(), m_player.getSprite());
 
 		erase();
-		printw(copy.getPicture().c_str());
+		printw(copy.getFrame({0, max(0, (int)m_player.getFramePos().second - 50)}).c_str());
 		refresh();
 	}
 

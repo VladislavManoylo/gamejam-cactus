@@ -215,7 +215,7 @@ int main() {
 		erase();
 		printw("GAME OVER");
 		refresh();
-		this_thread::sleep_until(system_clock::now() + milliseconds(1000));
+		this_thread::sleep_until(system_clock::now() + milliseconds(2000));
 	}
 	endwin();
 

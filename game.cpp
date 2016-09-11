@@ -1,9 +1,14 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <string>
+#include <algorithm>
+#include <fstream>
+#include <cstring>
 #include <ncurses.h>
 
 #include "Sprite.h"
+#include "Scene.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -78,19 +83,24 @@ class Canvas {
 public:
 	Canvas()
 	{
-		for (unsigned x = 0; x < Height; ++x) {
-			for (unsigned y = 0; y < Width; ++y)
-				m_picture[x][y] = '.';
-			m_picture[x][Width] = '\n';
-		}
+		m_picture.resize((Width+1)*Height);
+		/* unsigned i = 0; */
+		/* for (unsigned x = 0; x < Height; ++x) { */
+		/* 	for (unsigned y = 0; y < Width; ++y) */
+		/* 		m_picture[i++] = 'E'; */
+		/* 	m_picture[i++] = '\n'; */
+		/* } */
+		m_picture = scene1;
 	}
 
-	const char* getPicture() const {
-		return (char*)m_picture;
+	string getPicture() const {
+		string ret = m_picture;
+		replace(ret.begin(), ret.end(), 'E', ' ');
+		return ret;
 	}
 
 	void draw(const Vec2<unsigned> pos, const char c) {
-		m_picture[pos.first][pos.second] = c;
+		m_picture.at(m_getIndex(pos)) = c;
 	}
 
 	void draw(const Vec2<unsigned> pos, const Sprite sprite) {
@@ -98,11 +108,13 @@ public:
 		for (unsigned x = 0; x < d.first; ++x)
 			for (unsigned y = 0; y < d.second; ++y)
 				if (sprite.get(x, y) != Sprite::transparent)
-					m_picture[x+pos.first][y+pos.second] = sprite.get(x, y);
+					m_picture.at(m_getIndex(x+pos.first, y+pos.second)) = sprite.get(x, y);
 	}
 
 private:
-	char m_picture[Height][Width+1]; // +1 for '\n' character
+	unsigned m_getIndex(unsigned x, unsigned y) const { return x * (Width + 1) + y; }
+	unsigned m_getIndex(Vec2<unsigned> pos) const { return m_getIndex(pos.first, pos.second); }
+	string m_picture;
 };
 
 template<unsigned Width, unsigned Height>
@@ -110,7 +122,7 @@ class Game {
 public:
 	Game()
 		: m_running(true)
-	{}
+	{ }
 
 	bool isRunning() const { return m_running; }
 
@@ -119,7 +131,7 @@ public:
 		copy.draw(m_player.getFramePos(), m_player.getSprite());
 
 		erase();
-		printw(copy.getPicture());
+		printw(copy.getPicture().c_str());
 		refresh();
 	}
 

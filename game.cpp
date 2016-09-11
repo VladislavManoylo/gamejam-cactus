@@ -97,6 +97,10 @@ public:
 	Canvas()
 	{
 		m_picture = scene1;
+		/* m_sceneSize.first = m_picture.size(); */
+		/* m_sceneSize.second = m_picture.front().length(); */
+		m_sceneSize.first = Height;
+		m_sceneSize.second = Width;
 	}
 
 	string getFrame(Vec2<unsigned> frameStart) const {
@@ -114,17 +118,23 @@ public:
 		m_picture.at(pos.first).at(pos.second) = c;
 	}
 
-	void draw(const Vec2<unsigned> pos, const Sprite sprite) {
-		const Vec2<unsigned>& d = sprite.dimensions;
-		for (unsigned x = 0; x < d.first; ++x)
-			for (unsigned y = 0; y < d.second; ++y)
+	void draw(const Vec2<int> pos, const Sprite sprite) {
+		Vec2<int> d = sprite.dimensions;
+		// preventing going out of the scene
+		int hDiff = (d.first + pos.first) - m_sceneSize.first;
+		if (hDiff > 0)
+			d.first -= hDiff;
+		int wDiff = (d.second + pos.second) - m_sceneSize.second;
+		if (wDiff > 0)
+			d.first -= wDiff;
+		for (int x = max(0, -pos.first); x < d.first; ++x)
+			for (int y = max(0, -pos.second); y < d.second; ++y)
 				if (sprite.get(x, y) != Sprite::transparent)
 					m_picture.at(x+pos.first).at(y+pos.second) = sprite.get(x, y);
 	}
 
 private:
-	unsigned m_getIndex(unsigned x, unsigned y) const { return x * (Width + 1) + y; }
-	unsigned m_getIndex(Vec2<unsigned> pos) const { return m_getIndex(pos.first, pos.second); }
+	Vec2<unsigned> m_sceneSize;
 	vector<string> m_picture;
 };
 

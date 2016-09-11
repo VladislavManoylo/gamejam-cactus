@@ -1,9 +1,10 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include <utility>
-#include <cstring>
 #include <ncurses.h>
+
+#include "Sprite.h"
+
 using namespace std;
 using namespace std::chrono;
 
@@ -33,13 +34,14 @@ Command getCommand() {
 	}
 }
 
-template <typename T>
-using Vec2 = pair<T, T>;
-
 class Character {
 public:
 	Vec2<unsigned> getFramePos () const {
 		return m_pos;
+	}
+
+	Sprite getSprite() const {
+		return cactusSprite;
 	}
 
 	void runCommand(Command cmd) {
@@ -65,7 +67,7 @@ public:
 	}
 
 private:
-	Vec2<unsigned> m_pos;
+	Vec2<unsigned> m_pos = Vec2<unsigned>(30, 30);
 };
 
 template<unsigned Width, unsigned Height>
@@ -84,13 +86,22 @@ public:
 		return (char*)m_picture;
 	}
 
-	void set(Vec2<unsigned> pos, char c) {
+	void draw(const Vec2<unsigned> pos, const char c) {
 		m_picture[pos.first][pos.second] = c;
 	}
+
+	void draw(const Vec2<unsigned> pos, const Sprite sprite) {
+		const Vec2<unsigned>& d = sprite.dimensions;
+		for (unsigned x = 0; x < d.first; ++x)
+			for (unsigned y = 0; y < d.second; ++y)
+				m_picture[x+pos.first][y+pos.second] = sprite.get(x, y);
+	}
+
 private:
 	char m_picture[Height][Width+1]; // +1 for '\n' character
 };
 
+template<unsigned Width, unsigned Height>
 class Game {
 public:
 	Game()
@@ -100,8 +111,9 @@ public:
 	bool isRunning() const { return m_running; }
 
 	void print() const {
-		Canvas<80, 30> copy = m_background;
-		copy.set(m_player.getFramePos(), 'X');
+		Canvas<Width, Height> copy = m_background;
+		copy.draw(m_player.getFramePos(), 'X');
+		/* copy.draw(m_player.getFramePos(), m_player.getSprite()); */
 
 		erase();
 		printw(copy.getPicture());
@@ -130,14 +142,15 @@ private:
 private:
 	Character m_player;
 	bool m_running;
-	Canvas<80, 30> m_background;
+	Canvas<Width, Height> m_background;
 };
 
 int main() {
+	try {
 	initscr();
 	nodelay(stdscr, TRUE);
 	time_point<system_clock> time = system_clock::now();
-	Game game;
+	Game<200, 50> game;
 	do {
 		game.update();
 		game.print();
@@ -145,7 +158,11 @@ int main() {
 		time += milliseconds(MPF);
 		this_thread::sleep_until(time);
 	} while (game.isRunning());
+	}
+	catch (...)
+	{
 	endwin();
+	}
 
 	return 0;
 }

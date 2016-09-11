@@ -49,12 +49,12 @@ public:
 
 	Sprite getSprite() const {
 		if (m_attackTimer > FPS)
-			return cactusSprite3;
+			return saguero.at("attack1");
 		if (m_attackTimer > FPS/2)
-			return cactusSprite4;
+			return saguero.at("attack2");
 		if (m_attackTimer > FPS/3)
-			return cactusSprite3;
-		return cactusSprite2;
+			return saguero.at("attack1");
+		return saguero.at("idle");
 	}
 
 	void runCommand(Command cmd) {

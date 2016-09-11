@@ -23,33 +23,11 @@ struct Sprite {
 	static constexpr char transparent = 'E';
 };
 
-struct SpriteSheet {
-	SpriteSheet(std::map<std::string, Sprite> s)
-		: sheets(s)
-	{}
-	std::map<std::string, Sprite> sheets;
-};
 
-const Sprite cactusSprite(Vec2<unsigned>(16, 28),
-"          _-----_           "
-" ________,_______,_________ "
-"(                          )"
-" ; _-------------------_ ,; "
-"  `------|        |-----'   "
-"         |  '   ' |    ,---,"
-",----,   | ###  ###    |   }"
-"{  ' |  #############  |   |"
-"|'  '|   |  ##  ##|----   '|"
-"{    ----|        }        }"
-"| '    '   ' '  ' | '   '  |"
-"{   '             |----+---'"
-" `-+--'--|  '   ' |    '    "
-"   '     {   '    }         "
-"         | '   '  |         "
-"         |'  '   '|         "
-);
+using SpriteSheet = std::map<std::string, Sprite>;
+const SpriteSheet saguero = {
 
-const Sprite cactusSprite2(Vec2<unsigned>(16, 28),
+{"idle", {Vec2<unsigned>(16, 28),
 "EEEEEEEEEE_-----_EEEEEEEEEEE"
 " ________,_______,_________ "
 "(                          )"
@@ -66,10 +44,10 @@ const Sprite cactusSprite2(Vec2<unsigned>(16, 28),
 "EEEEEEEEE{   '    }EEEEEEEEE"
 "EEEEEEEEE| '   '  |EEEEEEEEE"
 "EEEEEEEEE|'  '   '|EEEEEEEEE"
-);
+}},
 
 
-const Sprite cactusSprite3(Vec2<unsigned>(16, 32),
+{"attack1", {Vec2<unsigned>(16, 32),
 "EEEEEEEEEE_-----_EEEEEEEEEEEEEEE"
 " ________,_______,_________EEEEE"
 "(                          )EEEE"
@@ -86,9 +64,9 @@ const Sprite cactusSprite3(Vec2<unsigned>(16, 32),
 "EEEEEEEEE{   '    }EEEEEEEEEEEEE"
 "EEEEEEEEE| '   '  |EEEEEEEEEEEEE"
 "EEEEEEEEE|'  '   '|EEEEEEEEEEEEE"
-);
+}},
 
-const Sprite cactusSprite4(Vec2<unsigned>(16, 37),
+{"attack2", {Vec2<unsigned>(16, 37),
 "EEEEEEEEEE_-----_EEEEEEEEEEEEEEEEEEEE"
 " ________,_______,_________EEEEEEEEEE"
 "(                          )EEEEEEEEE"
@@ -105,6 +83,7 @@ const Sprite cactusSprite4(Vec2<unsigned>(16, 37),
 "EEEEEEEEE{   '    }EEEEEEEEEEEEEEEEEE"
 "EEEEEEEEE| '   '  |EEEEEEEEEEEEEEEEEE"
 "EEEEEEEEE|'  '   '|EEEEEEEEEEEEEEEEEE"
-);
+}}
+};
 
 #endif

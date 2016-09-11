@@ -6,8 +6,59 @@
 #include <utility>
 #include <iostream>
 
-template <typename T>
-using Vec2 = std::pair<T, T>;
+template<typename T>
+struct Vec2 {
+
+	Vec2() : x(0), y(0) {}
+	Vec2(T x2, T y2) : x(x2), y(y2) {}
+
+	template<typename U>
+	Vec2(const Vec2<U>& other) : x(other.x), y(other.y) {}
+
+	Vec2& operator+= (const Vec2& other) {
+		x += other.x;
+		y += other.y;
+		return *this;
+	}
+	Vec2& operator-= (const Vec2& other) {
+		x -= other.x;
+		y -= other.y;
+		return *this;
+	}
+	Vec2& operator*= (const int scalar) {
+		x *= scalar;
+		y *= scalar;
+		return *this;
+	}
+	Vec2& operator/= (const int scalar) {
+		x /= scalar;
+		y /= scalar;
+		return *this;
+	}
+
+	Vec2 operator+ (Vec2 other) const {
+		other += *this;
+		return other;
+	}
+	Vec2 operator- (Vec2 other) const {
+		other -= *this;
+		return -other;
+	}
+	Vec2 operator* (const int scalar) const {
+		return Vec2(x*scalar, y*scalar);
+	}
+	Vec2 operator/ (const int scalar) const {
+		return Vec2(x/scalar, y/scalar);
+	}
+	Vec2 operator-() const {
+		Vec2 ret(-x,-y);
+		return ret;
+	}
+
+
+	T x;
+	T y;
+};
 
 struct Sprite {
 	Sprite(Vec2<unsigned> d, std::string s)
@@ -18,7 +69,7 @@ struct Sprite {
 	std::string sheet;
 
 	char get(unsigned x, unsigned y) const {
-		return sheet.at(x*dimensions.second + y);
+		return sheet.at(x*dimensions.y + y);
 	}
 	static constexpr char transparent = 'E';
 };

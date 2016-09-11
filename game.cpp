@@ -44,7 +44,7 @@ Command getCommand() {
 class Character {
 public:
 	Vec2<unsigned> getFramePos () const {
-		return Vec2<unsigned>(m_pos.first, m_pos.second);
+		return Vec2<unsigned>(m_pos.x, m_pos.y);
 	}
 
 	Sprite getSprite() const {
@@ -60,16 +60,16 @@ public:
 	void runCommand(Command cmd) {
 		switch (cmd) {
 			case Command::up:
-				--m_pos.first;
+				--m_pos.x;
 				break;
 			case Command::down:
-				++m_pos.first;
+				++m_pos.x;
 				break;
 			case Command::left:
-				m_velocity.second = -10;
+				m_velocity.y = -10;
 				break;
 			case Command::right:
-				m_velocity.second = 10;
+				m_velocity.y = 10;
 				break;
 			case Command::attack:
 				m_attackTimer = FPS * 1.2;
@@ -79,8 +79,7 @@ public:
 	}
 
 	void update() {
-		m_pos.first += m_velocity.first / FPS;
-		m_pos.second += m_velocity.second / FPS;
+		m_pos += (m_velocity / FPS);
 		if (m_attackTimer > 0)
 			--m_attackTimer;
 	}
@@ -97,16 +96,14 @@ public:
 	Canvas()
 	{
 		m_picture = scene1;
-		/* m_sceneSize.first = m_picture.size(); */
-		/* m_sceneSize.second = m_picture.front().length(); */
-		m_sceneSize.first = Height;
-		m_sceneSize.second = Width;
+		m_sceneSize.x = Height;
+		m_sceneSize.y = Width;
 	}
 
-	string getFrame(Vec2<unsigned> frameStart) const {
+	string getFrame(Vec2<int> frameStart) const {
 		string ret = "";
-		for (unsigned x = frameStart.first, xEnd = x + Height; x < xEnd; ++x) {
-			for (unsigned y = frameStart.second, yEnd = y + Width; y < yEnd; ++y)
+		for (unsigned x = frameStart.x, xEnd = x + Height; x < xEnd; ++x) {
+			for (unsigned y = frameStart.y, yEnd = y + Width; y < yEnd; ++y)
 				ret += m_picture.at(x).at(y);
 			ret += '\n';
 		}
@@ -114,23 +111,22 @@ public:
 		return ret;
 	}
 
-	void draw(const Vec2<unsigned> pos, const char c) {
-		m_picture.at(pos.first).at(pos.second) = c;
+	void draw(const Vec2<int> pos, const char c) {
+		m_picture.at(pos.x).at(pos.y) = c;
 	}
 
 	void draw(const Vec2<int> pos, const Sprite sprite) {
 		Vec2<int> d = sprite.dimensions;
 		// preventing going out of the scene
-		int hDiff = (d.first + pos.first) - m_sceneSize.first;
-		if (hDiff > 0)
-			d.first -= hDiff;
-		int wDiff = (d.second + pos.second) - m_sceneSize.second;
-		if (wDiff > 0)
-			d.first -= wDiff;
-		for (int x = max(0, -pos.first); x < d.first; ++x)
-			for (int y = max(0, -pos.second); y < d.second; ++y)
+		Vec2<int> diff = (d + pos) - m_sceneSize;
+		if (diff.x > 0)
+			d.x -= diff.x;
+		if (diff.y > 0)
+			d.x -= diff.y;
+		for (int x = max(0, -pos.x); x < d.x; ++x)
+			for (int y = max(0, -pos.y); y < d.y; ++y)
 				if (sprite.get(x, y) != Sprite::transparent)
-					m_picture.at(x+pos.first).at(y+pos.second) = sprite.get(x, y);
+					m_picture.at(x+pos.x).at(y+pos.y) = sprite.get(x, y);
 	}
 
 private:
@@ -151,8 +147,9 @@ public:
 		Canvas<Width, Height> copy = m_background;
 		copy.draw(m_player.getFramePos(), m_player.getSprite());
 
+
 		erase();
-		printw(copy.getFrame({0, max(0, (int)m_player.getFramePos().second - 50)}).c_str());
+		printw(copy.getFrame({0, max(0, (int)(m_player.getFramePos().y) - 50)}).c_str());
 		refresh();
 	}
 

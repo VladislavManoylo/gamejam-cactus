@@ -24,6 +24,7 @@ enum class Command {
 	left,
 	right,
 	exit,
+	attack,
 	none
 };
 
@@ -35,6 +36,7 @@ Command getCommand() {
 		case 'a': return Command::left;
 		case 's': return Command::down;
 		case 'd': return Command::right;
+		case 'e': return Command::attack;
 		default: return Command::none;
 	}
 }
@@ -46,6 +48,12 @@ public:
 	}
 
 	Sprite getSprite() const {
+		if (m_attackTimer > FPS)
+			return cactusSprite3;
+		if (m_attackTimer > FPS/2)
+			return cactusSprite4;
+		if (m_attackTimer > FPS/3)
+			return cactusSprite3;
 		return cactusSprite2;
 	}
 
@@ -63,6 +71,8 @@ public:
 			case Command::right:
 				m_velocity.second = 10;
 				break;
+			case Command::attack:
+				m_attackTimer = FPS * 1.2;
 			default:
 				break;
 		}
@@ -71,9 +81,12 @@ public:
 	void update() {
 		m_pos.first += m_velocity.first / FPS;
 		m_pos.second += m_velocity.second / FPS;
+		if (m_attackTimer > 0)
+			--m_attackTimer;
 	}
 
 private:
+	unsigned m_attackTimer = 0;
 	Vec2<double> m_pos = Vec2<double>(30, 30);
 	Vec2<double> m_velocity = Vec2<double>(0,0);
 };

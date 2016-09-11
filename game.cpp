@@ -176,8 +176,12 @@ int main() {
 	}
 	catch (...)
 	{
-	endwin();
+		erase();
+		printw("GAME OVER");
+		refresh();
+		this_thread::sleep_until(system_clock::now() + milliseconds(1000));
 	}
+	endwin();
 
 	return 0;
 }

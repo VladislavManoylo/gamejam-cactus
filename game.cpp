@@ -34,11 +34,11 @@ Command getCommand() {
 }
 
 template <typename T>
-using Coord = pair<T, T>;
+using Vec2 = pair<T, T>;
 
 class Character {
 public:
-	Coord<unsigned> getFramePos () const {
+	Vec2<unsigned> getFramePos () const {
 		return m_pos;
 	}
 
@@ -65,11 +65,11 @@ public:
 	}
 
 private:
-	Coord<unsigned> m_pos;
+	Vec2<unsigned> m_pos;
 };
 
 class Game {
-	using Pos = Coord<unsigned>;
+	using Pos = Vec2<unsigned>;
 	unsigned posToIndex(Pos pos) const {
 		return pos.first * m_frameWidth + pos.second;
 	}

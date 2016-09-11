@@ -103,10 +103,19 @@ public:
 
 	string getFrame(Vec2<int> frameStart) const {
 		string ret = "";
-		for (unsigned x = frameStart.x, xEnd = min(m_sceneSize.x, x + Height); x < xEnd; ++x) {
-			for (unsigned y = frameStart.y, yEnd = min(m_sceneSize.y, y + Width); y < yEnd; ++y)
-				ret += m_picture.at(x).at(y);
-			ret += '\n';
+		if (!m_wrap) {
+			for (unsigned x = frameStart.x, xEnd = min(m_sceneSize.x, x + Height); x < xEnd; ++x) {
+				for (unsigned y = frameStart.y, yEnd = min(m_sceneSize.y, y + Width); y < yEnd; ++y)
+					ret += m_picture.at(x).at(y);
+				ret += '\n';
+			}
+		}
+		else {
+			for (unsigned x = frameStart.x, xEnd = x + Height; x < xEnd; ++x) {
+				for (unsigned y = frameStart.y, yEnd = y + Width; y < yEnd; ++y)
+					ret += m_picture.at(x%m_sceneSize.x).at(y%m_sceneSize.y);
+				ret += '\n';
+			}
 		}
 		replace(ret.begin(), ret.end(), 'E', ' ');
 		return ret;
@@ -118,19 +127,27 @@ public:
 
 	void draw(const Vec2<int> pos, const Sprite sprite) {
 		Vec2<int> d = sprite.dimensions;
-		// preventing going out of the scene
-		Vec2<int> diff = (d + pos) - m_sceneSize;
-		if (diff.x > 0)
-			d.x -= diff.x;
-		if (diff.y > 0)
-			d.x -= diff.y;
-		for (int x = max(0, -pos.x); x < d.x; ++x)
-			for (int y = max(0, -pos.y); y < d.y; ++y)
-				if (sprite.get(x, y) != Sprite::transparent)
-					m_picture.at(x+pos.x).at(y+pos.y) = sprite.get(x, y);
+		if (!m_wrap) {
+			Vec2<int> diff = (d + pos) - m_sceneSize;
+			if (diff.x > 0)
+				d.x -= diff.x;
+			if (diff.y > 0)
+				d.x -= diff.y;
+			for (int x = max(0, -pos.x); x < d.x; ++x)
+				for (int y = max(0, -pos.y); y < d.y; ++y)
+					if (sprite.get(x, y) != Sprite::transparent)
+						m_picture.at(x+pos.x).at(y+pos.y) = sprite.get(x, y);
+		}
+		else {
+			for (int x = max(0, -pos.x); x < d.x; ++x)
+				for (int y = max(0, -pos.y); y < d.y; ++y)
+					if (sprite.get(x, y) != Sprite::transparent)
+						m_picture.at((x+pos.x)%m_sceneSize.y).at((y+pos.y)%m_sceneSize.y) = sprite.get(x, y);
+		}
 	}
 
 private:
+	bool m_wrap = true;
 	Vec2<unsigned> m_sceneSize;
 	vector<string> m_picture;
 };

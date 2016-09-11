@@ -66,10 +66,10 @@ public:
 				++m_pos.x;
 				break;
 			case Command::left:
-				m_velocity.y = -10;
+				m_velocity.y -= 10;
 				break;
 			case Command::right:
-				m_velocity.y = 10;
+				m_velocity.y += 10;
 				break;
 			case Command::attack:
 				m_attackTimer = FPS * 1.2;

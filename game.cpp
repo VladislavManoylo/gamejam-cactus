@@ -44,43 +44,43 @@ Command getCommand() {
 class Character {
 public:
 	Vec2<unsigned> getFramePos () const {
-		return Vec2<unsigned>(m_pos.first, m_pos.second);
+		return Vec2<unsigned>(m_pos.x, m_pos.y);
 	}
 
 	Sprite getSprite() const {
-		if (m_attackTimer > FPS)
-			return saguero.at("attack1");
+		const auto& sheet = (m_velocity.y >= 0) ? saguero : sagueroReversed;
+		if (m_attackTimer > 4*FPS/5)
+			return sheet.at("attack1");
 		if (m_attackTimer > FPS/2)
-			return saguero.at("attack2");
+			return sheet.at("attack2");
 		if (m_attackTimer > FPS/3)
-			return saguero.at("attack1");
-		return saguero.at("idle");
+			return sheet.at("attack1");
+		return sheet.at("idle");
 	}
 
 	void runCommand(Command cmd) {
 		switch (cmd) {
 			case Command::up:
-				--m_pos.first;
+				--m_pos.x;
 				break;
 			case Command::down:
-				++m_pos.first;
+				++m_pos.x;
 				break;
 			case Command::left:
-				m_velocity.second = -10;
+				m_velocity.y -= 10;
 				break;
 			case Command::right:
-				m_velocity.second = 10;
+				m_velocity.y += 10;
 				break;
 			case Command::attack:
-				m_attackTimer = FPS * 1.2;
+				m_attackTimer = FPS * 1;
 			default:
 				break;
 		}
 	}
 
 	void update() {
-		m_pos.first += m_velocity.first / FPS;
-		m_pos.second += m_velocity.second / FPS;
+		m_pos += (m_velocity / FPS);
 		if (m_attackTimer > 0)
 			--m_attackTimer;
 	}
@@ -97,12 +97,14 @@ public:
 	Canvas()
 	{
 		m_picture = scene1;
+		m_sceneSize.x = m_picture.size();
+		m_sceneSize.y = m_picture.front().length();
 	}
 
-	string getFrame(Vec2<unsigned> frameStart) const {
+	string getFrame(Vec2<int> frameStart) const {
 		string ret = "";
-		for (unsigned x = frameStart.first, xEnd = x + Height; x < xEnd; ++x) {
-			for (unsigned y = frameStart.second, yEnd = y + Width; y < yEnd; ++y)
+		for (unsigned x = frameStart.x, xEnd = min(m_sceneSize.x, x + Height); x < xEnd; ++x) {
+			for (unsigned y = frameStart.y, yEnd = min(m_sceneSize.y, y + Width); y < yEnd; ++y)
 				ret += m_picture.at(x).at(y);
 			ret += '\n';
 		}
@@ -110,21 +112,26 @@ public:
 		return ret;
 	}
 
-	void draw(const Vec2<unsigned> pos, const char c) {
-		m_picture.at(pos.first).at(pos.second) = c;
+	void draw(const Vec2<int> pos, const char c) {
+		m_picture.at(pos.x).at(pos.y) = c;
 	}
 
-	void draw(const Vec2<unsigned> pos, const Sprite sprite) {
-		const Vec2<unsigned>& d = sprite.dimensions;
-		for (unsigned x = 0; x < d.first; ++x)
-			for (unsigned y = 0; y < d.second; ++y)
+	void draw(const Vec2<int> pos, const Sprite sprite) {
+		Vec2<int> d = sprite.dimensions;
+		// preventing going out of the scene
+		Vec2<int> diff = (d + pos) - m_sceneSize;
+		if (diff.x > 0)
+			d.x -= diff.x;
+		if (diff.y > 0)
+			d.x -= diff.y;
+		for (int x = max(0, -pos.x); x < d.x; ++x)
+			for (int y = max(0, -pos.y); y < d.y; ++y)
 				if (sprite.get(x, y) != Sprite::transparent)
-					m_picture.at(x+pos.first).at(y+pos.second) = sprite.get(x, y);
+					m_picture.at(x+pos.x).at(y+pos.y) = sprite.get(x, y);
 	}
 
 private:
-	unsigned m_getIndex(unsigned x, unsigned y) const { return x * (Width + 1) + y; }
-	unsigned m_getIndex(Vec2<unsigned> pos) const { return m_getIndex(pos.first, pos.second); }
+	Vec2<unsigned> m_sceneSize;
 	vector<string> m_picture;
 };
 
@@ -141,8 +148,9 @@ public:
 		Canvas<Width, Height> copy = m_background;
 		copy.draw(m_player.getFramePos(), m_player.getSprite());
 
+
 		erase();
-		printw(copy.getFrame({0, max(0, (int)m_player.getFramePos().second - 50)}).c_str());
+		printw(copy.getFrame({0, max(0, (int)(m_player.getFramePos().y) - 50)}).c_str());
 		refresh();
 	}
 

@@ -48,13 +48,14 @@ public:
 	}
 
 	Sprite getSprite() const {
+		const auto& sheet = (m_velocity.y >= 0) ? saguero : sagueroReversed;
 		if (m_attackTimer > 4*FPS/5)
-			return saguero.at("attack1");
+			return sheet.at("attack1");
 		if (m_attackTimer > FPS/2)
-			return saguero.at("attack2");
+			return sheet.at("attack2");
 		if (m_attackTimer > FPS/3)
-			return saguero.at("attack1");
-		return saguero.at("idle");
+			return sheet.at("attack1");
+		return sheet.at("idle");
 	}
 
 	void runCommand(Command cmd) {

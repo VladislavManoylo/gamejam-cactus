@@ -48,7 +48,7 @@ public:
 	}
 
 	Sprite getSprite() const {
-		if (m_attackTimer > FPS)
+		if (m_attackTimer > 4*FPS/5)
 			return saguero.at("attack1");
 		if (m_attackTimer > FPS/2)
 			return saguero.at("attack2");
@@ -72,7 +72,7 @@ public:
 				m_velocity.y += 10;
 				break;
 			case Command::attack:
-				m_attackTimer = FPS * 1.2;
+				m_attackTimer = FPS * 1;
 			default:
 				break;
 		}

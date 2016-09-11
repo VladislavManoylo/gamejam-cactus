@@ -96,14 +96,14 @@ public:
 	Canvas()
 	{
 		m_picture = scene1;
-		m_sceneSize.x = Height;
-		m_sceneSize.y = Width;
+		m_sceneSize.x = m_picture.size();
+		m_sceneSize.y = m_picture.front().length();
 	}
 
 	string getFrame(Vec2<int> frameStart) const {
 		string ret = "";
-		for (unsigned x = frameStart.x, xEnd = x + Height; x < xEnd; ++x) {
-			for (unsigned y = frameStart.y, yEnd = y + Width; y < yEnd; ++y)
+		for (unsigned x = frameStart.x, xEnd = max(Height, x + Height); x < xEnd; ++x) {
+			for (unsigned y = frameStart.y, yEnd = max(Width, y + Width); y < yEnd; ++y)
 				ret += m_picture.at(x).at(y);
 			ret += '\n';
 		}

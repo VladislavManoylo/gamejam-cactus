@@ -55,6 +55,11 @@ struct Vec2 {
 		return ret;
 	}
 
+	friend std::ostream& operator<<(std::ostream& out, const Vec2& vec) {
+		out << '(' << vec.x << ", " << vec.y << ')';
+		return out;
+	}
+
 
 	T x;
 	T y;
